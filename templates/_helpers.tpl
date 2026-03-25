@@ -631,3 +631,31 @@ app: "{{ template "harbor.name" . }}"
 {{- define "harbor.ingress.kubeVersion" -}}
   {{- default .Capabilities.KubeVersion.Version .Values.expose.ingress.kubeVersionOverride -}}
 {{- end -}}
+
+{{/*
+Pod Security Context helper.
+Renders a 'securityContext:' block using component-level podSecurityContext if set,
+falling back to the global podSecurityContext.
+Pass an empty map ({}) to suppress the securityContext block entirely (e.g. on OpenShift).
+
+Usage in a Deployment/StatefulSet spec:
+  {{- include "harbor.podSecurityContext" (dict "root" . "ctx" .Values.core) | nindent 6 }}
+
+  root  – the top-level template dot (.)
+  ctx   – the component values map (e.g. .Values.core, .Values.registry …)
+         It may contain a key "podSecurityContext" that overrides the global default.
+*/}}
+{{- define "harbor.podSecurityContext" -}}
+{{- $global := .root.Values.podSecurityContext | default dict -}}
+{{- $local  := .ctx.podSecurityContext -}}
+{{- /* If a component-level key exists (even as an explicit empty map {}), it wins.
+       Otherwise fall back to the global default. */ -}}
+{{- $effective := $global -}}
+{{- if not (kindIs "invalid" $local) -}}
+  {{- $effective = $local -}}
+{{- end -}}
+{{- if $effective -}}
+securityContext:
+{{ toYaml $effective | indent 2 -}}
+{{- end -}}
+{{- end -}}

@@ -497,6 +497,24 @@ containerSecurityContext:
     drop:
       - ALL
 
+# Global Pod Security Context applied to all Harbor components.
+# Can be overridden per component via <component>.podSecurityContext.
+#
+# On OpenShift, set this to {} (empty map) and use values-openshift.yaml,
+# so that OpenShift's Security Context Constraints (SCC) assign the IDs
+# automatically instead of having them rejected by the admission controller.
+#
+# Example – standard Kubernetes (default):
+#   podSecurityContext:
+#     runAsUser: 10000
+#     fsGroup: 10000
+#
+# Example – OpenShift (suppress securityContext entirely):
+#   podSecurityContext: {}
+podSecurityContext:
+  runAsUser: 10000
+  fsGroup: 10000
+
 # If service exposed via "ingress", the Nginx will not be used
 nginx:
   image:
@@ -532,6 +550,11 @@ nginx:
   podLabels: {}
   ## The priority class to run the pod as
   priorityClassName:
+  # Override the global podSecurityContext for this component.
+  # Set to {} to suppress the securityContext block (e.g. on OpenShift).
+  # podSecurityContext:
+  #   runAsUser: 10000
+  #   fsGroup: 10000
 
 portal:
   image:
@@ -576,6 +599,11 @@ portal:
   # - name: wait
   #   image: busybox
   #   command: [ 'sh', '-c', "sleep 20" ]
+  # Override the global podSecurityContext for this component.
+  # Set to {} to suppress the securityContext block (e.g. on OpenShift).
+  # podSecurityContext:
+  #   runAsUser: 10000
+  #   fsGroup: 10000
 
 core:
   image:
@@ -669,6 +697,11 @@ core:
   gdpr:
     deleteUser: false
     auditLogsCompliant: false
+  # Override the global podSecurityContext for this component.
+  # Set to {} to suppress the securityContext block (e.g. on OpenShift).
+  # podSecurityContext:
+  #   runAsUser: 10000
+  #   fsGroup: 10000
 
 jobservice:
   image:
@@ -738,9 +771,14 @@ jobservice:
   existingSecret: ""
   # Key within the existing secret for the job service secret
   existingSecretKey: JOBSERVICE_SECRET
-  # By default, the timeout is set to 30 minutes. This field only needs be re-configured if a longer request timeout is required. 
+  # By default, the timeout is set to 30 minutes. This field only needs be re-configured if a longer request timeout is required.
   # the value assigned to timeout should be a number without min, e.g. registryHttpClientTimeout: 60 configures the timeout to 60 minutes
   registryHttpClientTimeout: 30
+  # Override the global podSecurityContext for this component.
+  # Set to {} to suppress the securityContext block (e.g. on OpenShift).
+  # podSecurityContext:
+  #   runAsUser: 10000
+  #   fsGroup: 10000
 
 registry:
   registry:
@@ -832,6 +870,11 @@ registry:
     # the interval of the purge operations
     interval: 24h
     dryrun: false
+  # Override the global podSecurityContext for this component.
+  # Set to {} to suppress the securityContext block (e.g. on OpenShift).
+  # podSecurityContext:
+  #   runAsUser: 10000
+  #   fsGroup: 10000
 
 trivy:
   # enabled the flag to enable Trivy scanner
@@ -935,12 +978,17 @@ trivy:
   # For example, the offline mode will not try to resolve transitive dependencies in pom.xml when the dependency doesn't
   # exist in the local repositories. It means a number of detected vulnerabilities might be fewer in offline mode.
   # It would work if all the dependencies are in local.
-  # This option doesn’t affect DB download. You need to specify skipUpdate as well as offlineScan in an air-gapped environment.
+  # This option doesn't affect DB download. You need to specify skipUpdate as well as offlineScan in an air-gapped environment.
   offlineScan: false
   # Comma-separated list of what security issues to detect. Defaults to `vuln`.
   securityCheck: "vuln"
   # The duration to wait for scan completion
   timeout: 5m0s
+  # Override the global podSecurityContext for this component.
+  # Set to {} to suppress the securityContext block (e.g. on OpenShift).
+  # podSecurityContext:
+  #   runAsUser: 10000
+  #   fsGroup: 10000
 
 database:
   # if external database is used, set "type" to "external"
@@ -994,6 +1042,11 @@ database:
       #  requests:
       #    memory: 128Mi
       #    cpu: 100m
+    # Override the global podSecurityContext for this component.
+    # Set to {} to suppress the securityContext block (e.g. on OpenShift).
+    # podSecurityContext:
+    #   runAsUser: 999
+    #   fsGroup: 999
   external:
     host: "192.168.0.1"
     port: "5432"
@@ -1061,6 +1114,11 @@ redis:
     trivyAdapterIndex: "5"
     # harborDatabaseIndex: "6"
     # cacheLayerDatabaseIndex: "7"
+    # Override the global podSecurityContext for this component.
+    # Set to {} to suppress the securityContext block (e.g. on OpenShift).
+    # podSecurityContext:
+    #   runAsUser: 999
+    #   fsGroup: 999
   external:
     # support redis, redis+sentinel
     # addr for redis: <host_redis>:<port_redis>
@@ -1130,3 +1188,8 @@ exporter:
   #   whenUnsatisfiable: DoNotSchedule
   cacheDuration: 23
   cacheCleanInterval: 14400
+  # Override the global podSecurityContext for this component.
+  # Set to {} to suppress the securityContext block (e.g. on OpenShift).
+  # podSecurityContext:
+  #   runAsUser: 10000
+  #   fsGroup: 10000

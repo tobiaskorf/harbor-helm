@@ -43,9 +43,7 @@ spec:
 {{- if .Values.trivy.serviceAccountName }}
       serviceAccountName: {{ .Values.trivy.serviceAccountName }}
 {{- end }}
-      securityContext:
-        runAsUser: 10000
-        fsGroup: 10000
+      {{- include "harbor.podSecurityContext" (dict "root" . "ctx" .Values.trivy) | nindent 6 }}
       automountServiceAccountToken: {{ .Values.trivy.automountServiceAccountToken | default false }}
 {{- with .Values.trivy.topologySpreadConstraints}}
       topologySpreadConstraints:

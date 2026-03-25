@@ -44,10 +44,7 @@ spec:
 {{ toYaml .Values.registry.podAnnotations | indent 8 }}
 {{- end }}
     spec:
-      securityContext:
-        runAsUser: 10000
-        fsGroup: 10000
-        fsGroupChangePolicy: OnRootMismatch
+      {{- include "harbor.podSecurityContext" (dict "root" . "ctx" .Values.registry) | nindent 6 }}
 {{- if .Values.registry.serviceAccountName }}
       serviceAccountName: {{ .Values.registry.serviceAccountName }}
 {{- end -}}

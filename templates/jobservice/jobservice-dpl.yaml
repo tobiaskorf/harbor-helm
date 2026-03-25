@@ -42,9 +42,7 @@ spec:
 {{ toYaml .Values.jobservice.podAnnotations | indent 8 }}
 {{- end }}
     spec:
-      securityContext:
-        runAsUser: 10000
-        fsGroup: 10000
+      {{- include "harbor.podSecurityContext" (dict "root" . "ctx" .Values.jobservice) | nindent 6 }}
 {{- if .Values.jobservice.serviceAccountName }}
       serviceAccountName: {{ .Values.jobservice.serviceAccountName }}
 {{- end -}}

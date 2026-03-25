@@ -30,9 +30,7 @@ spec:
 {{ toYaml .Values.redis.podAnnotations | indent 8 }}
 {{- end }}
     spec:
-      securityContext:
-        runAsUser: 999
-        fsGroup: 999
+      {{- include "harbor.podSecurityContext" (dict "root" . "ctx" .Values.redis.internal) | nindent 6 }}
 {{- if .Values.redis.internal.serviceAccountName }}
       serviceAccountName: {{ .Values.redis.internal.serviceAccountName }}
 {{- end -}}
